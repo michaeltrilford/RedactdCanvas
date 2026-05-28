@@ -1,7 +1,7 @@
 {
   "name": "redactd-canvas",
   "version": "0.1.0",
-  "description": "Codex plugin for sending Redactd component trees to the active Redactd canvas.",
+  "description": "Prompt UI from Codex to redactd.xyz.",
   "author": {
     "name": "Redactd",
     "url": "https://redactd.xyz"
@@ -19,8 +19,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Redactd Canvas",
-    "shortDescription": "Create Redactd canvas UI from Codex.",
-    "longDescription": "Send valid Redactd component trees from Codex to the user's active Redactd workspace using the same API path as the Redactd GPT action, with bundled component knowledge and stricter tool feedback.",
+    "shortDescription": "Prompt UI from Codex to redactd.xyz.",
+    "longDescription": "Create interface designs in Codex and send them straight to your active Redactd canvas on redactd.xyz.",
     "developerName": "Redactd",
     "category": "Productivity",
     "capabilities": [
@@ -29,9 +29,7 @@
     ],
     "websiteURL": "https://redactd.xyz",
     "defaultPrompt": [
-      "Create a sign in form on my Redactd canvas.",
-      "Add a dashboard layout to my Redactd canvas.",
-      "Create a three-tier pricing section in Redactd."
+      "Help me plan what to add to my Redactd canvas."
     ],
     "brandColor": "#111827",
     "composerIcon": "./assets/logo.png",

@@ -2,7 +2,7 @@
   "name": "redactd-canvas",
   "version": "0.1.0",
   "private": true,
-  "description": "Codex plugin for sending Redactd component trees to the active Redactd canvas.",
+  "description": "Prompt UI from Codex to redactd.xyz.",
   "license": "LicenseRef-Redactd-Proprietary",
   "type": "module",
   "main": "./src/index.js",

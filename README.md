@@ -1,6 +1,6 @@
 # Redactd Canvas for Codex
 
-Redactd Canvas lets Codex create interface designs directly on your active Redactd canvas. Ask Codex for a form, dashboard, pricing section, onboarding flow, or other UI, and the plugin sends the generated Redactd component tree to your workspace.
+Redactd Canvas lets you prompt UI in Codex and send it directly to your active Redactd canvas on redactd.xyz. Ask Codex for a form, dashboard, pricing section, onboarding flow, or other interface, then open the returned Redactd link to keep editing.
 
 ## What You Need
 
