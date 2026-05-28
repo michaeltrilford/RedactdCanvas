@@ -1,0 +1,40 @@
+{
+  "name": "redactd-canvas",
+  "version": "0.1.0",
+  "description": "Codex plugin for sending Redactd component trees to the active Redactd canvas.",
+  "author": {
+    "name": "Redactd",
+    "url": "https://redactd.xyz"
+  },
+  "homepage": "https://redactd.xyz",
+  "license": "LicenseRef-Redactd-Proprietary",
+  "keywords": [
+    "redactd",
+    "codex",
+    "canvas",
+    "ui-builder",
+    "components"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Redactd Canvas",
+    "shortDescription": "Create Redactd canvas UI from Codex.",
+    "longDescription": "Send valid Redactd component trees from Codex to the user's active Redactd workspace using the same API path as the Redactd GPT action, with bundled component knowledge and stricter tool feedback.",
+    "developerName": "Redactd",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://redactd.xyz",
+    "defaultPrompt": [
+      "Create a sign in form on my Redactd canvas.",
+      "Add a dashboard layout to my Redactd canvas.",
+      "Create a three-tier pricing section in Redactd."
+    ],
+    "brandColor": "#111827",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png"
+  }
+}
