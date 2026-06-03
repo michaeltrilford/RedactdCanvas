@@ -12,6 +12,28 @@ You can find your API key in Redactd at Profile > Settings or Team Settings > Ac
 
 ## Add Redactd Canvas to Codex
 
+### Option 1: Add from GitHub
+
+In Codex, add this repository as a plugin marketplace:
+
+```text
+Source: https://github.com/michaeltrilford/RedactdCanvas.git
+Git ref: main
+Sparse paths:
+.agents/plugins
+plugins
+```
+
+You can also add it from the Codex CLI:
+
+```bash
+codex plugin marketplace add michaeltrilford/RedactdCanvas
+```
+
+Then install the plugin named `Redactd Canvas`.
+
+### Option 2: Add from a local checkout
+
 1. Download or clone this repository to your computer.
 2. Open Codex.
 3. Add this repository as a plugin marketplace.
