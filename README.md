@@ -17,12 +17,14 @@ You can find your API key in Redactd at Profile > Settings or Team Settings > Ac
 In Codex, add this repository as a plugin marketplace:
 
 ```text
-Source: https://github.com/michaeltrilford/RedactdCanvas.git
+Source: michaeltrilford/RedactdCanvas
 Git ref: main
 Sparse paths:
 .agents/plugins
 plugins
 ```
+
+The full GitHub URL also works: `https://github.com/michaeltrilford/RedactdCanvas.git`.
 
 You can also add it from the Codex CLI:
 
