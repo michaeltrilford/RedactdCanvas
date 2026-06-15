@@ -68,6 +68,11 @@ function normalizeTreeNode(value, path = 'tree') {
   const props = value.props && typeof value.props === 'object' && !Array.isArray(value.props)
     ? value.props
     : {};
+  const propsSlot = typeof props.slot === 'string' && props.slot.trim() ? props.slot.trim() : '';
+  const nodeSlot = typeof value.slot === 'string' && value.slot.trim() ? value.slot.trim() : '';
+  const slot = nodeSlot || propsSlot;
+  const normalizedProps = propsSlot ? { ...props } : props;
+  if (propsSlot) delete normalizedProps.slot;
 
   const rawChildren = value.children === undefined || value.children === null ? [] : value.children;
   if (!Array.isArray(rawChildren)) throw new Error(`${path}.children must be an array when provided.`);
@@ -78,8 +83,8 @@ function normalizeTreeNode(value, path = 'tree') {
         ? value.id.trim()
         : `codex_${type.toLowerCase()}_${randomUUID().slice(0, 8)}`,
     type,
-    ...(typeof value.slot === 'string' && value.slot.trim() ? { slot: value.slot.trim() } : {}),
-    props,
+    ...(slot ? { slot } : {}),
+    props: normalizedProps,
     children: rawChildren.map((child, index) => normalizeTreeNode(child, `${path}.children[${index}]`))
   };
 }
