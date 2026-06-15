@@ -5,12 +5,47 @@ import { fileURLToPath } from 'node:url';
 
 const DEFAULT_ENDPOINT = 'https://redactd.xyz/.netlify/functions/recipes-create';
 const PLUGIN_ROOT = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
-const KNOWLEDGE_PATH = join(PLUGIN_ROOT, 'assets', 'muibook-gpt-knowledge.json');
+const KNOWLEDGE_DIR = join(PLUGIN_ROOT, 'assets', 'muibook-knowledge');
 
 let cachedKnowledge = null;
 
+async function readJson(path) {
+  return JSON.parse(await readFile(path, 'utf8'));
+}
+
+async function readText(path) {
+  return readFile(path, 'utf8');
+}
+
+function extractStringRaw(value) {
+  const match = value.match(/String\.raw`([\s\S]*?)`/);
+  return match ? match[1] : value;
+}
+
 async function readKnowledge() {
-  cachedKnowledge ??= JSON.parse(await readFile(KNOWLEDGE_PATH, 'utf8'));
+  if (cachedKnowledge) return cachedKnowledge;
+
+  const [customElements, dynamicAttrs, rulesSource, compositionsSource, keywordsSource, designSystem] =
+    await Promise.all([
+      readJson(join(KNOWLEDGE_DIR, 'custom-elements.json')),
+      readJson(join(KNOWLEDGE_DIR, 'dynamic-attrs.json')),
+      readText(join(KNOWLEDGE_DIR, 'rules.ts')),
+      readText(join(KNOWLEDGE_DIR, 'compositions.ts')),
+      readText(join(KNOWLEDGE_DIR, 'keywords.ts')),
+      readText(join(KNOWLEDGE_DIR, 'DESIGN.md'))
+    ]);
+
+  cachedKnowledge = {
+    source: 'muibook-knowledge',
+    customElements,
+    dynamicAttrs,
+    rules: extractStringRaw(rulesSource),
+    sources: {
+      compositions: compositionsSource,
+      keywords: keywordsSource,
+      designSystem
+    }
+  };
   return cachedKnowledge;
 }
 
@@ -50,16 +85,41 @@ function normalizeTreeNode(value, path = 'tree') {
 }
 
 function makeKnowledgeSummary(knowledge) {
-  const system = typeof knowledge.system === 'string' ? knowledge.system : '';
-  const componentSection = system.split('Available Components:')[1]?.split('SPACING VALUES:')[0]?.trim() || '';
-  const examples = knowledge.examples && typeof knowledge.examples === 'object'
-    ? Object.keys(knowledge.examples)
-    : [];
+  const components = [];
+
+  for (const mod of knowledge.customElements.modules || []) {
+    for (const decl of mod.declarations || []) {
+      if (!decl.customElement || !decl.tagName) continue;
+
+      const type = decl.tagName
+        .replace(/^mui-/, '')
+        .replace(/-([a-z])/g, (_, char) => char.toUpperCase())
+        .replace(/^./, (char) => char.toUpperCase());
+
+      const attributes = (decl.attributes || []).map((attr) => attr.name).filter(Boolean);
+      const slots = (decl.slots || []).map((slot) => slot.name || 'default').filter(Boolean);
+
+      components.push({
+        type,
+        tagName: decl.tagName,
+        description: decl.description || '',
+        attributes,
+        slots
+      });
+    }
+  }
+
+  const compositionNames = Array.from(
+    knowledge.sources.compositions.matchAll(/^\s{2}([A-Za-z0-9_]+):\s*\{\s*includeInAgent:/gm),
+    (match) => match[1]
+  );
 
   return {
-    rules: system.split('\n\nAvailable Components:')[0]?.trim() || system.slice(0, 4000),
-    availableComponents: componentSection,
-    exampleNames: examples
+    source: knowledge.source,
+    rules: knowledge.rules,
+    components,
+    exampleNames: compositionNames,
+    designSystem: knowledge.sources.designSystem
   };
 }
 
