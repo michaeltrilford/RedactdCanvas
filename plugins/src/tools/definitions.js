@@ -9,12 +9,11 @@ export const TOOL_DEFINITIONS = [
         tree: {
           type: 'object',
           description:
-            'Root Redactd TreeNode. Use id, type, props, and children. Component types and props must come from the bundled Redactd component knowledge.',
+            'Root Redactd TreeNode. Use id, type, props, and children. Component types and props must come from the bundled Redactd component knowledge. Put slot placement inside props.slot.',
           required: ['type'],
           properties: {
             id: { type: 'string' },
             type: { type: 'string' },
-            slot: { type: 'string' },
             props: { type: 'object', additionalProperties: true },
             children: {
               type: 'array',
