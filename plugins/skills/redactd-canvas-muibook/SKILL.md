@@ -7,25 +7,164 @@ description: Create Muibook UI on an active Redactd canvas from Codex Browser. P
 
 Use this skill when the user asks Codex to create, add, send, or modify Muibook UI on a Redactd canvas. The default lightweight path pairs this skill with `muibook-components` and uses an already-open Redactd canvas in Codex Browser.
 
+This skill can independently create basic layouts with the core components documented below. Pair
+it with `muibook-components` for the recommended lightweight workflow and broader component,
+attribute, slot, token, and composition knowledge.
+
+## Redactd Tree Contract
+
+Build one root JSON object. Every node must contain all four fields:
+
+```json
+{
+  "id": "unique_descriptive_id",
+  "type": "ComponentType",
+  "props": {},
+  "children": []
+}
+```
+
+- `id` must be a unique, descriptive string across the entire tree.
+- `type` is a Redactd PascalCase component name such as `Container`, `CardBody`, or `Button`.
+- `props` contains component content, public props, and slot placement.
+- `children` is always an array, including on leaf nodes.
+- Put slot placement in `props.slot`. Do not add `slot` beside `id`, `type`, or `props`.
+- The browser **Paste JSON** workflow receives the root tree object itself, without an API wrapper.
+
+Minimal valid tree:
+
+```json
+{
+  "id": "welcome_container",
+  "type": "Container",
+  "props": {
+    "center": true,
+    "size": "medium"
+  },
+  "children": [
+    {
+      "id": "welcome_card",
+      "type": "Card",
+      "props": {},
+      "children": [
+        {
+          "id": "welcome_card_body",
+          "type": "CardBody",
+          "props": {},
+          "children": [
+            {
+              "id": "welcome_content",
+              "type": "VStack",
+              "props": {
+                "space": "var(--space-400)",
+                "alignX": "stretch"
+              },
+              "children": [
+                {
+                  "id": "welcome_title",
+                  "type": "Heading",
+                  "props": {
+                    "text": "Welcome",
+                    "level": "2",
+                    "size": "3"
+                  },
+                  "children": []
+                },
+                {
+                  "id": "welcome_copy",
+                  "type": "Body",
+                  "props": {
+                    "text": "Start building with Muibook components.",
+                    "variant": "secondary"
+                  },
+                  "children": []
+                },
+                {
+                  "id": "welcome_action",
+                  "type": "Button",
+                  "props": {
+                    "text": "Continue",
+                    "variant": "primary"
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Muibook Handoff
+
+When `muibook-components` is installed:
+
+1. Use its component reference to choose valid Muibook components, public attributes, slots, and
+   tokens.
+2. Prefer its selected compositions when one matches the requested interface. Those examples
+   already use the Redactd `{ id, type, props, children }` schema and `props.slot`.
+3. Give every generated node a unique descriptive `id` and validate the complete tree against the
+   contract above.
+4. This canvas skill owns browser access, clipboard serialization, **Paste JSON**, and verification.
+
+For a native Muibook tag not already shown in a selected composition:
+
+- Remove `mui-` and convert kebab-case to PascalCase: `mui-card-body` becomes `CardBody`.
+- Convert `mui-icon-name` to `_Icon` with `props.icon: "mui-icon-name"`.
+- Convert `mui-illustration-name` to `_Illustration` with
+  `props.illustration: "mui-illustration-name"`.
+- Put rendered text in `props.text` for `Heading`, `Body`, `Button`, `Link`, `Badge`, `Status`,
+  `Chip`, `TabItem`, and `ListItem`.
+- Move native `slot="name"` to `props.slot: "name"`.
+- Preserve documented props and token values. Do not blindly copy internal or dynamic attributes.
+
+## Independent Core
+
+Without `muibook-components`, use only this compact core for basic layouts:
+
+- `Container`: `center`, `size`, `style`.
+- `Card` with a direct `CardBody` child; `CardBody`: `size`, `style`.
+- `VStack`, `HStack`: `space`, `padding`, `alignX`, `alignY`, `width`, `height`, `style`, `slot`.
+- `Grid`: `col`, `space`, `padding`, `alignX`, `alignY`, `style`, `slot`.
+- `Heading`: `text`, `size`, `level`; `Body`: `text`, `size`, `weight`, `variant`.
+- `Button`: `text`, `variant`, `size`, `aria-label`; `Link`: `text`, `href`, `variant`, `size`.
+- `Field`: `label`, `variant`, `message`, `size`; `Input`: `label`, `type`, `placeholder`,
+  `name`, `value`, `size`.
+- `Badge`: `text`, `variant`, `size`; `_Icon`: `icon`, `size`, `color`, `slot`.
+
+This core is an intentionally small snapshot of the working Muibook MCP tree rules, not a separate
+component schema.
+
+If a request needs components or props outside this core, recommend installing
+`muibook-components`. The Muibook Knowledge MCP and full Redactd Canvas plugin remain optional
+richer paths.
+
 ## Knowledge Routing
 
 Choose the available Muibook knowledge source before building the tree:
 
+The standalone pair is the default lightweight route. If the working Muibook Knowledge MCP is
+available, treat its current rules and component lookups as authoritative over either standalone
+skill's embedded snapshot.
+
 1. **Lightweight skill pair:** Prefer the installed `muibook-components` skill for the standalone
    Codex workflow. Use its component, public attribute, slot, token, and selected composition
    references when building the tree.
-2. **Muibook MCP:** If richer or newer guidance is needed and the Muibook Knowledge MCP is
+2. **Independent core:** If `muibook-components` is unavailable, use only this skill's Independent
+   Core for basic layouts.
+3. **Muibook MCP:** If richer or newer guidance is needed and the Muibook Knowledge MCP is
    available, call its `start_here` tool, then use its rules, compositions, component lookup, and
    dynamic attrs as needed. Treat a newer MCP version as authoritative.
-3. **Bundled Redactd knowledge:** In the full Redactd Canvas plugin, if
+4. **Bundled Redactd knowledge:** In the full Redactd Canvas plugin, if
    `get_redactd_component_knowledge` is available, call it with `format: "summary"`. This source
    matches the Muibook version supported by that Redactd release.
-4. **No knowledge source:** Do not invent components or props. Explain that the lightweight
-   `muibook-components` skill should be installed. Offer the Muibook Knowledge MCP or full Redactd
-   Canvas plugin only as richer alternatives.
 
-The two standalone skills plus Codex Browser are sufficient for the lightweight workflow. The
-Muibook Knowledge MCP, Redactd Canvas plugin, and API backend are optional.
+This skill alone supports the Independent Core. The two standalone skills plus Codex Browser are
+the recommended lightweight workflow. The Muibook Knowledge MCP, Redactd Canvas plugin, and API
+backend are optional.
 
 ## Transport Routing
 
@@ -45,8 +184,9 @@ Codex host.
 ## Shared Workflow
 
 1. Select the knowledge source using Knowledge Routing above.
-2. Build a Redactd component tree with `id`, `type`, `props`, and `children` on every node.
-3. Follow either the Codex browser workflow or the API workflow.
+2. Build and validate a Redactd component tree against the Redactd Tree Contract.
+3. Follow the Codex Browser workflow by default, or the API workflow only when browser transport
+   is unavailable.
 
 ## Codex Browser Workflow
 
@@ -64,8 +204,9 @@ user's existing canvas content unless they explicitly asked to replace it.
 
 ## API Workflow
 
-1. Call `create_redactd_recipe` with `{ "tree": ..., "open_canvas": true }`.
-2. Tell the user the exact `canvas_url` returned by the tool. Do not rewrite it.
+1. Wrap the validated root tree as `{ "tree": ..., "open_canvas": true }` only for this API call.
+2. Call `create_redactd_recipe` with that wrapper.
+3. Tell the user the exact `canvas_url` returned by the tool. Do not rewrite it.
 
 ## API Auth
 
@@ -79,7 +220,8 @@ user's existing canvas content unless they explicitly asked to replace it.
 
 - Use only component types and props from the selected Muibook knowledge source.
 - Never invent Redactd component names, aliases, props, CSS tokens, or Material UI names.
-- Do not send the tree directly as the request body. The tool sends `{ "tree": ..., "open_canvas": true }`.
+- In the API workflow, do not send the tree directly as the request body. The tool sends
+  `{ "tree": ..., "open_canvas": true }`.
 - Root additions should usually use `Container` with `center: true` and `size: "medium"` unless the user asks for a fragment.
 - Card content must be inside a direct child `CardBody`.
 - Button and Link text belongs on the component props, not inside a child `Body`.

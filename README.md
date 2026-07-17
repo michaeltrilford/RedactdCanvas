@@ -52,7 +52,15 @@ The Muibook Canvas skill can also be installed without the Redactd API backend. 
 plugins/skills/redactd-canvas-muibook
 ```
 
-The standalone skill uses the Muibook knowledge MCP to generate a Redactd component tree, then pastes it into an already-open `redactd.xyz` canvas through the Codex browser. It does not require the Redactd MCP server or an API key.
+The standalone skill can create basic layouts independently, then paste them into an already-open `redactd.xyz` canvas through Codex Browser. Pair it with the standalone `muibook-components` skill for the recommended lightweight workflow and broader component, prop, slot, token, and composition knowledge.
+
+Install the companion skill from `michaeltrilford/muibook` at:
+
+```text
+skills/muibook-components
+```
+
+The Muibook Knowledge MCP and full Redactd Canvas plugin remain optional richer paths. The browser workflow does not require the Redactd API backend or an API key.
 
 The skill's source of truth remains in this repository. Standalone installations are local copies and must be reinstalled from the same GitHub path to receive future updates.
 
