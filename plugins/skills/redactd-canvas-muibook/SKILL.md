@@ -1,11 +1,26 @@
 ---
-name: canvas
-description: Create Redactd UI on the active Redactd canvas from Codex using bundled component knowledge and the Redactd canvas MCP tool.
+name: redactd-canvas-muibook
+description: Create Muibook UI on an active Redactd canvas from Codex using the Muibook knowledge MCP or the Redactd Canvas plugin's bundled Muibook knowledge.
 ---
 
-# Canvas
+# Redactd Canvas: Muibook
 
-Use this skill when the user asks Codex to create, add, send, or modify UI on a Redactd canvas.
+Use this skill when the user asks Codex to create, add, send, or modify Muibook UI on a Redactd canvas.
+
+## Knowledge Routing
+
+Choose the available Muibook knowledge source before building the tree:
+
+1. **Bundled Redactd knowledge:** If `get_redactd_component_knowledge` is available, call it with
+   `format: "summary"`. Prefer this source in the full Redactd Canvas plugin because it matches the
+   Muibook version supported by that Redactd release.
+2. **Muibook MCP:** Otherwise, if the Muibook knowledge MCP is available, call its `start_here` tool
+   first, then use its rules, compositions, component lookup, and dynamic attrs as needed.
+3. **No knowledge source:** Do not invent components or props. Explain that either the Muibook
+   knowledge MCP or the full Redactd Canvas plugin is required.
+
+The Muibook MCP plus the Codex browser is sufficient for the lightweight browser-only workflow.
+The Redactd Canvas MCP backend is optional unless the API fallback is needed.
 
 ## Transport Routing
 
@@ -13,8 +28,10 @@ Choose the transport before creating the UI:
 
 1. **Codex browser:** If the Browser skill is available and Codex can access an already-open
    `redactd.xyz` canvas tab, use the browser paste workflow below. Do not ask for a Redactd API key.
-2. **API:** Otherwise use `create_redactd_recipe`. This is the headless, automated, and non-browser
-   fallback and requires a Redactd API key.
+2. **API:** Otherwise, if `create_redactd_recipe` is available, use it as the headless, automated,
+   and non-browser fallback. It requires a Redactd API key.
+3. **Unavailable:** If neither browser access nor `create_redactd_recipe` is available, explain that
+   the user must open Redactd in the Codex browser or install the full Redactd Canvas plugin.
 
 Do not call the API first when an accessible Redactd canvas is already open in the Codex browser.
 The MCP server is intentionally API-only; browser availability is decided by the skill and the
@@ -22,7 +39,7 @@ Codex host.
 
 ## Shared Workflow
 
-1. If component details are needed, call `get_redactd_component_knowledge` with `format: "summary"`.
+1. Select the knowledge source using Knowledge Routing above.
 2. Build a Redactd component tree with `id`, `type`, `props`, and `children` on every node.
 3. Follow either the Codex browser workflow or the API workflow.
 
@@ -55,7 +72,7 @@ user's existing canvas content unless they explicitly asked to replace it.
 
 ## Tree Rules
 
-- Use only component types and props from the bundled Redactd knowledge.
+- Use only component types and props from the selected Muibook knowledge source.
 - Never invent Redactd component names, aliases, props, CSS tokens, or Material UI names.
 - Do not send the tree directly as the request body. The tool sends `{ "tree": ..., "open_canvas": true }`.
 - Root additions should usually use `Container` with `center: true` and `size: "medium"` unless the user asks for a fragment.

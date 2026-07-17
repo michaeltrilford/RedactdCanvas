@@ -6,9 +6,9 @@ Redactd Canvas lets you prompt UI in Codex and send it directly to your active R
 
 - Codex with plugin support enabled.
 - A Redactd account.
-- A Redactd API key.
+- An open Redactd canvas in the Codex browser, or a Redactd API key for the API fallback.
 
-You can find your API key in Redactd at Profile > Settings or Team Settings > Account Settings > API Key.
+You can find your API key in Redactd at Profile > Settings or Team Settings > Account Settings > API Key. An API key is not required when Codex can paste directly into an already-open Redactd canvas.
 
 ## Add Redactd Canvas to Codex
 
@@ -42,7 +42,31 @@ Then install the plugin named `Redactd Canvas`.
 4. Install the plugin named `Redactd Canvas`.
 5. Start a new Codex chat and ask Codex to create UI on your Redactd canvas.
 
-When Codex needs to send the design to Redactd, it will ask for your Redactd API key. The key is used for that request so Redactd can add the generated UI to the correct workspace.
+When Codex can access an open Redactd canvas in its browser, it pastes the design directly. It asks for your Redactd API key only when it needs to use the API fallback.
+
+## Install Only the Muibook Canvas Skill
+
+The Muibook Canvas skill can also be installed without the Redactd API backend. Install the following GitHub folder as a global Codex skill:
+
+```text
+plugins/skills/redactd-canvas-muibook
+```
+
+The standalone skill uses the Muibook knowledge MCP to generate a Redactd component tree, then pastes it into an already-open `redactd.xyz` canvas through the Codex browser. It does not require the Redactd MCP server or an API key.
+
+The skill's source of truth remains in this repository. Standalone installations are local copies and must be reinstalled from the same GitHub path to receive future updates.
+
+## Canvas Skill Adapters
+
+Redactd supports different canvas component systems through separate, namespaced skills under `plugins/skills`:
+
+```text
+plugins/skills/
+└── redactd-canvas-muibook/
+    └── SKILL.md
+```
+
+The Muibook adapter is the first supported skill. Future adapters may support native HTML elements or other component systems, but they are not included yet. Each adapter owns its component-knowledge routing while following the same Redactd JSON tree and browser-paste workflow.
 
 ## Example Prompts
 
@@ -60,16 +84,18 @@ Create a three-tier pricing section for a SaaS product.
 
 ## How It Works
 
-Redactd Canvas gives Codex a Redactd-aware design tool. Codex uses the included Redactd component knowledge to create valid UI, then queues the result to your active Redactd canvas.
+Redactd Canvas gives Codex a Redactd-aware design tool. Codex uses the Muibook adapter and its available knowledge source to create valid UI. It pastes the result directly into an open Codex browser canvas when possible, or queues it through the API fallback.
 
-After a successful request, Codex will return a Redactd canvas link. Open that link to review and continue editing the design in Redactd.
+After a direct browser paste, the design is already open on the active canvas. After a successful API request, Codex returns a Redactd canvas link that you can open to review and continue editing.
 
 ## Troubleshooting
 
 If Codex cannot send UI to Redactd, check that:
 
-- The `Redactd Canvas` plugin is installed and enabled in Codex.
-- Your Redactd API key is correct.
+- The full `Redactd Canvas` plugin or the standalone `redactd-canvas-muibook` skill is installed and enabled in Codex.
+- The Muibook knowledge MCP is available when using the standalone skill.
+- Redactd is open in the Codex browser when using direct paste.
+- Your Redactd API key is correct when using the API fallback.
 - Your Redactd account has access to the workspace you want to update.
 - You have an active internet connection.
 
