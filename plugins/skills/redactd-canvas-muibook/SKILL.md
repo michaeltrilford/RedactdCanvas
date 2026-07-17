@@ -1,26 +1,31 @@
 ---
 name: redactd-canvas-muibook
-description: Create Muibook UI on an active Redactd canvas from Codex using the Muibook knowledge MCP or the Redactd Canvas plugin's bundled Muibook knowledge.
+description: Create Muibook UI on an active Redactd canvas from Codex Browser. Pair with the lightweight muibook-components skill for component knowledge without requiring the Redactd Canvas plugin, API backend, or Muibook Knowledge MCP; use those as optional richer paths when available.
 ---
 
 # Redactd Canvas: Muibook
 
-Use this skill when the user asks Codex to create, add, send, or modify Muibook UI on a Redactd canvas.
+Use this skill when the user asks Codex to create, add, send, or modify Muibook UI on a Redactd canvas. The default lightweight path pairs this skill with `muibook-components` and uses an already-open Redactd canvas in Codex Browser.
 
 ## Knowledge Routing
 
 Choose the available Muibook knowledge source before building the tree:
 
-1. **Bundled Redactd knowledge:** If `get_redactd_component_knowledge` is available, call it with
-   `format: "summary"`. Prefer this source in the full Redactd Canvas plugin because it matches the
-   Muibook version supported by that Redactd release.
-2. **Muibook MCP:** Otherwise, if the Muibook knowledge MCP is available, call its `start_here` tool
-   first, then use its rules, compositions, component lookup, and dynamic attrs as needed.
-3. **No knowledge source:** Do not invent components or props. Explain that either the Muibook
-   knowledge MCP or the full Redactd Canvas plugin is required.
+1. **Lightweight skill pair:** Prefer the installed `muibook-components` skill for the standalone
+   Codex workflow. Use its component, public attribute, slot, token, and selected composition
+   references when building the tree.
+2. **Muibook MCP:** If richer or newer guidance is needed and the Muibook Knowledge MCP is
+   available, call its `start_here` tool, then use its rules, compositions, component lookup, and
+   dynamic attrs as needed. Treat a newer MCP version as authoritative.
+3. **Bundled Redactd knowledge:** In the full Redactd Canvas plugin, if
+   `get_redactd_component_knowledge` is available, call it with `format: "summary"`. This source
+   matches the Muibook version supported by that Redactd release.
+4. **No knowledge source:** Do not invent components or props. Explain that the lightweight
+   `muibook-components` skill should be installed. Offer the Muibook Knowledge MCP or full Redactd
+   Canvas plugin only as richer alternatives.
 
-The Muibook MCP plus the Codex browser is sufficient for the lightweight browser-only workflow.
-The Redactd Canvas MCP backend is optional unless the API fallback is needed.
+The two standalone skills plus Codex Browser are sufficient for the lightweight workflow. The
+Muibook Knowledge MCP, Redactd Canvas plugin, and API backend are optional.
 
 ## Transport Routing
 
