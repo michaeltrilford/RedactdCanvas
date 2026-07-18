@@ -166,6 +166,20 @@ This skill alone supports the Independent Core. The two standalone skills plus C
 the recommended lightweight workflow. The Muibook Knowledge MCP, Redactd Canvas plugin, and API
 backend are optional.
 
+## Wireframe Interpretation
+
+When a wireframe image is provided:
+
+1. Read it as a description of intent, hierarchy, and approximate layout rather than a pixel-perfect specification.
+2. Use visible labels and control patterns to identify likely UI concepts, then resolve them through the Muibook keyword mappings.
+3. Verify inferred components, public attributes, and slots against the `muibook-components` skill before generating the Redactd JSON tree.
+4. Treat unlabelled rectangles as layout regions by default. Do not automatically convert every outlined region into a Card.
+5. Infer H Stack, V Stack, Grid, spacing, alignment, wrapping, and responsive direction from the spatial relationships between elements.
+6. Preserve repeated visual patterns as repeated component structures.
+7. Use a generic Muibook layout component when the intended component is ambiguous. Do not invent components or attributes.
+8. Treat rough colours, borders, and spacing as illustrative unless the wireframe explicitly annotates them as requirements.
+9. Produce a reasonable first pass without blocking on minor ambiguity. Ask for clarification only when uncertainty would materially change the workflow or component hierarchy.
+
 ## Transport Routing
 
 Choose the transport before creating the UI:
