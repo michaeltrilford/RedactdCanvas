@@ -180,6 +180,74 @@ When a wireframe image is provided:
 8. Treat rough colours, borders, and spacing as illustrative unless the wireframe explicitly annotates them as requirements.
 9. Produce a reasonable first pass without blocking on minor ambiguity. Ask for clarification only when uncertainty would materially change the workflow or component hierarchy.
 
+## Muibook Chart Data
+
+When a prompt asks for a populated Muibook chart, include its structured dataset in the Redactd
+tree. This fills the chart's **Data** or **Series** control in the Redactd UI; Redactd handles passing
+that value to the underlying Muibook component.
+
+- `FinancialChart.props.data`: `[{ time, open, high, low, close, volume? }]`
+- `MarketSparkline.props.data`: `[{ time, value }]`
+- `FinancialBarChart.props.data`: `[{ time, value }]`
+- `ComparisonChart.props.series`: `[{ id, label, color?, data: [{ time, value }] }]`
+
+Keep datasets as structured JSON arrays. Do not stringify them or generate JavaScript assignment
+code. Use numeric values, order points chronologically, and use ISO `YYYY-MM-DD` dates for daily
+illustrative data unless the user supplies another valid time format. If the user requests a chart
+without supplying data, create enough coherent illustrative points to make the requested trend
+visible.
+
+```json
+{
+  "id": "btc_price_chart",
+  "type": "FinancialChart",
+  "props": {
+    "symbol": "BTC/USD",
+    "currency": "USD",
+    "type": "candlestick",
+    "data": [
+      { "time": "2026-06-01", "open": 102.4, "high": 104.8, "low": 101.7, "close": 103.9, "volume": 18400000 },
+      { "time": "2026-06-02", "open": 103.9, "high": 105.2, "low": 102.8, "close": 104.5, "volume": 16900000 },
+      { "time": "2026-06-03", "open": 104.5, "high": 106.1, "low": 103.6, "close": 105.8, "volume": 21300000 }
+    ]
+  },
+  "children": []
+}
+```
+
+For `MarketSparkline` and `FinancialBarChart`, use this simpler Data shape:
+
+```json
+"data": [
+  { "time": "2026-06-01", "value": 101.2 },
+  { "time": "2026-06-02", "value": 103.8 },
+  { "time": "2026-06-03", "value": 102.9 }
+]
+```
+
+For `ComparisonChart`, populate Series with named datasets:
+
+```json
+"series": [
+  {
+    "id": "actual",
+    "label": "Actual",
+    "data": [
+      { "time": "2026-06-01", "value": 101.2 },
+      { "time": "2026-06-02", "value": 103.8 }
+    ]
+  },
+  {
+    "id": "forecast",
+    "label": "Forecast",
+    "data": [
+      { "time": "2026-06-01", "value": 100.8 },
+      { "time": "2026-06-02", "value": 104.1 }
+    ]
+  }
+]
+```
+
 ## Transport Routing
 
 Choose the transport before creating the UI:
@@ -210,17 +278,23 @@ Codex host.
 4. Open the canvas instance ellipsis menu and choose **Paste JSON**.
 5. Verify the canvas shows the pasted structure and the `✓ Pasted` confirmation.
 6. If the deployed canvas reports a component is not in its registry, treat that as version drift.
-   Recompose that part from registered primitives only when the user wants compatibility with the
-   currently deployed version.
+   This is a useful capability gap identified by the experiment, not a failed composition. Preserve
+   the pasted structure, report the missing component, and do not delete or rebuild the work.
+   Recompose that part from registered primitives only when the user explicitly wants compatibility
+   with the currently deployed version.
 
 Never use **Cut**, **Delete**, or **Copy for AI** as a substitute for **Paste JSON**. Preserve the
 user's existing canvas content unless they explicitly asked to replace it.
 
 ## API Workflow
 
-1. Wrap the validated root tree as `{ "tree": ..., "open_canvas": true }` only for this API call.
-2. Call `create_redactd_recipe` with that wrapper.
-3. Tell the user the exact `canvas_url` returned by the tool. Do not rewrite it.
+1. Call `get_redactd_context` and confirm `library` is `muibook`.
+2. If the active library is `html-foundations`, use `redactd-canvas-html` instead. If it is
+   unsupported, report that custom libraries are unavailable through this plugin.
+3. Wrap the validated root tree as
+   `{ "tree": ..., "open_canvas": true, "library": "muibook" }` only for this API call.
+4. Call `create_redactd_recipe` with that wrapper.
+5. Tell the user the exact `canvas_url` returned by the tool. Do not rewrite it.
 
 ## API Auth
 
@@ -240,6 +314,14 @@ user's existing canvas content unless they explicitly asked to replace it.
 - Card content must be inside a direct child `CardBody`.
 - Button and Link text belongs on the component props, not inside a child `Body`.
 - Use documented spacing tokens such as `var(--space-300)` rather than raw token numbers.
+- Layout spacing props such as `space` and `padding` must use complete CSS token references such as
+  `var(--space-400)`. Do not use `space-400`, `400`, or another bare scale value; use
+  `var(--space-000)` for zero spacing.
+- For equal Grid columns, use `col: "repeat(N, minmax(0, 1fr))"`. Do not pass a numeric count or
+  repeated bare tracks such as `1fr 1fr 1fr`, which allow intrinsic content to force the Grid wider.
+- Prefer `Responsive` with `variant: "container"` for reusable components and compositions so the
+  layout follows its available parent region. Use viewport responsiveness only for page-level or
+  app-shell decisions that genuinely depend on browser width.
 - Avoid `Message` for inline helper text, form help, mid-content notes, or routine status copy. Use `FormMessage` inside forms, or `Body` with `variant: "info"` and an `_Icon` with `slot: "before"` for lightweight informational copy. Reserve `Message` for persistent page-level notices with a short heading and slotted body copy.
 
 ## Response

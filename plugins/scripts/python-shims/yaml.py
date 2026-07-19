@@ -17,12 +17,11 @@ def safe_load(source: str) -> dict[str, object] | None:
         return None
 
     result: dict[str, object] = {}
+    current_mapping: dict[str, object] | None = None
     for line_number, raw_line in enumerate(source.splitlines(), start=1):
         stripped = raw_line.strip()
         if not stripped or stripped.startswith("#"):
             continue
-        if raw_line[:1].isspace():
-            raise YAMLError(f"unsupported indentation on line {line_number}")
         if ":" not in stripped:
             raise YAMLError(f"expected key/value pair on line {line_number}")
 
@@ -30,7 +29,23 @@ def safe_load(source: str) -> dict[str, object] | None:
         key = key.strip()
         if not key:
             raise YAMLError(f"empty key on line {line_number}")
-        result[key] = _parse_scalar(raw_value.strip())
+        indentation = len(raw_line) - len(raw_line.lstrip(" "))
+
+        if indentation == 0:
+            parsed_value = _parse_scalar(raw_value.strip())
+            if parsed_value is None and raw_value.strip() == "":
+                current_mapping = {}
+                result[key] = current_mapping
+            else:
+                current_mapping = None
+                result[key] = parsed_value
+            continue
+
+        if indentation == 2 and current_mapping is not None:
+            current_mapping[key] = _parse_scalar(raw_value.strip())
+            continue
+
+        raise YAMLError(f"unsupported indentation on line {line_number}")
 
     return result
 

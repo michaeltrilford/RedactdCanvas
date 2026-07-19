@@ -1,5 +1,25 @@
 export const TOOL_DEFINITIONS = [
   {
+    name: 'get_redactd_context',
+    description:
+      'Return whether the active Redactd library is Muibook or HTML Foundations. Custom libraries are reported as unsupported.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        apiKey: {
+          type: 'string',
+          description:
+            'Optional Redactd API key. If omitted, the tool reads REDACTD_API_KEY from the plugin environment.'
+        },
+        endpoint: {
+          type: 'string',
+          description:
+            'Optional endpoint override for local testing. Defaults to https://redactd.xyz/.netlify/functions/redactd-context.'
+        }
+      }
+    }
+  },
+  {
     name: 'create_redactd_recipe',
     description:
       'Queue a valid Redactd component tree into the user active Redactd canvas. Requires a Redactd API key argument or REDACTD_API_KEY environment variable.',
@@ -26,6 +46,12 @@ export const TOOL_DEFINITIONS = [
           type: 'boolean',
           description: 'Whether Redactd should return a one-time canvas replay URL.',
           default: true
+        },
+        library: {
+          type: 'string',
+          enum: ['muibook', 'html-foundations'],
+          description:
+            'Optional supported-library override. Omit to use the library selected in Redactd.'
         },
         apiKey: {
           type: 'string',

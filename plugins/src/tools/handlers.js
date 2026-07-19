@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_ENDPOINT = 'https://redactd.xyz/.netlify/functions/recipes-create';
+const DEFAULT_CONTEXT_ENDPOINT = 'https://redactd.xyz/.netlify/functions/redactd-context';
 const PLUGIN_ROOT = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 const KNOWLEDGE_DIR = join(PLUGIN_ROOT, 'assets', 'muibook-knowledge');
 
@@ -152,6 +153,25 @@ function formatCreateResponse(response) {
 }
 
 export async function callTool(name, args) {
+  if (name === 'get_redactd_context') {
+    const apiKey = normalizeApiKey(args.apiKey) || normalizeApiKey(process.env.REDACTD_API_KEY);
+    if (!apiKey) {
+      throw new Error(
+        'Missing Redactd API key. Pass apiKey to get_redactd_context or set REDACTD_API_KEY in the plugin environment.'
+      );
+    }
+    const endpoint =
+      typeof args.endpoint === 'string' && args.endpoint.trim()
+        ? args.endpoint.trim()
+        : DEFAULT_CONTEXT_ENDPOINT;
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: { authorization: `Bearer ${apiKey}` }
+    });
+    const data = await response.json();
+    return { displayText: JSON.stringify(data, null, 2), data };
+  }
+
   if (name === 'get_redactd_component_knowledge') {
     const knowledge = await readKnowledge();
     const format = args.format === 'full' ? 'full' : 'summary';
@@ -184,7 +204,10 @@ export async function callTool(name, args) {
       },
       body: JSON.stringify({
         tree,
-        open_canvas: openCanvas
+        open_canvas: openCanvas,
+        ...(args.library === 'muibook' || args.library === 'html-foundations'
+          ? { library: args.library }
+          : {})
       })
     });
 
