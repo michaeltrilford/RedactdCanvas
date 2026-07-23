@@ -1,6 +1,6 @@
 {
   "name": "redactd-canvas",
-  "version": "0.1.0+codex.20260723011422",
+  "version": "0.1.0+codex.20260723064226",
   "private": true,
   "description": "Prompt UI from Codex to redactd.xyz.",
   "license": "LicenseRef-Redactd-Proprietary",

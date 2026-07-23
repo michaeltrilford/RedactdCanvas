@@ -1,6 +1,6 @@
 {
   "name": "redactd-canvas",
-  "version": "0.1.0+codex.20260723011422",
+  "version": "0.1.0+codex.20260723064226",
   "description": "Prompt UI from Codex to redactd.xyz.",
   "author": {
     "name": "Redactd",
@@ -29,7 +29,8 @@
     ],
     "websiteURL": "https://redactd.xyz",
     "defaultPrompt": [
-      "Help me plan what to add to my Redactd canvas."
+      "Convert this wireframe to a Redactd layout?",
+      "Help me brainstorm a Redactd canvas layout."
     ],
     "brandColor": "#111827",
     "composerIcon": "./assets/logo.png",
