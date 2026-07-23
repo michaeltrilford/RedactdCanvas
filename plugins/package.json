@@ -1,6 +1,6 @@
 {
   "name": "redactd-canvas",
-  "version": "0.1.0+codex.20260617024127",
+  "version": "0.1.0+codex.20260723011422",
   "private": true,
   "description": "Prompt UI from Codex to redactd.xyz.",
   "license": "LicenseRef-Redactd-Proprietary",
@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node ./src/index.js",
     "test:smoke": "node ./src/index.js --smoke",
-    "validate:plugin": "PYTHONPATH=./scripts/python-shims python3 /Users/michaeltrilford/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py ."
+    "validate:plugin": "PYTHONPATH=./scripts/python-shims python3 /Users/michaeltrilford/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .",
+    "refresh:plugin": "node ./scripts/refresh-plugin.mjs"
   },
   "engines": {
     "node": ">=18"
