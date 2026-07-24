@@ -161,8 +161,10 @@ When a wireframe image is provided:
 5. Infer H Stack, V Stack, Grid, spacing, alignment, wrapping, and responsive direction from the spatial relationships between elements.
 6. Preserve repeated visual patterns as repeated component structures.
 7. Use a generic Muibook layout component when the intended component is ambiguous. Do not invent components or attributes.
-8. Treat rough colours, borders, and spacing as illustrative unless the wireframe explicitly annotates them as requirements.
-9. Produce a reasonable first pass without blocking on minor ambiguity. Ask for clarification only when uncertainty would materially change the workflow or component hierarchy.
+8. **No Hardcoded Canvas Colors or Tokens:** Treat white/light paper drawing canvas colors, outline colors, or sketch backgrounds purely as visual drawing artifacts—**NEVER** convert them to `var(--white)`, `#ffffff`, `white`, `color: black`, or hardcoded inline background styles. Hardcoding static white or light colors breaks Redactd's theme adaptation and dark mode.
+9. **Prefer Slat over Custom HStack:** For row-like wireframe items with primary text/label on the left and secondary metadata, status, timestamp, badge, count, or action button on the right, use `Slat` (or `SlatGroup` for repeated rows) with `slot="start"` and `slot="end"` instead of building an ad-hoc `HStack`. Always explicitly set `variant="row"` (or `"header"` / `"action"`) on `Slat`.
+10. **Use Drawer for Side Navigation & Panels:** When a wireframe or prompt shows a sidebar, side menu, collapsible filter panel, or slide-out overlay, use the `Drawer` component with `open` and `side` props rather than constructing a custom box or layout wrapper. Compose nav items inside `Drawer` using `Button` or `Link` with `variant="tertiary"`, `align="start"`, and a `slot="before"` `_Icon`.
+11. Produce a reasonable first pass without blocking on minor ambiguity. Ask for clarification only when uncertainty would materially change the workflow or component hierarchy.
 
 ## Muibook Chart Data
 
@@ -306,6 +308,9 @@ user's existing canvas content unless they explicitly asked to replace it.
 - Prefer `Responsive` with `variant: "container"` for reusable components and compositions so the
   layout follows its available parent region. Use viewport responsiveness only for page-level or
   app-shell decisions that genuinely depend on browser width.
+- **No Hardcoded White/Light Surface Colors:** NEVER output `var(--white)`, `style: "background: white"`, `#ffffff`, or `color: black` based on visual wireframe image backgrounds. All component surface and text styling must be driven by Redactd component variants (`variant: "primary"`, `variant: "secondary"`, `variant: "tertiary"`, etc.) and semantic design tokens so layouts adapt seamlessly to both light and dark mode.
+- **Slat vs. HStack Rule:** Use `Slat` and `SlatGroup` for horizontal list items, settings rows, metadata feeds, transaction lists, and activity rows. Do not substitute `HStack` when a `Slat` item contract fits. Always set `variant="row"` (or `"header"` / `"action"`) explicitly on `Slat`.
+- **Drawer Component Enforce Rule:** For sidebar menus, app drawers, side filters, or slide-out panels, use the native `Drawer` component (`open: true`, `side: "left"` or `"right"`). Use `variant="tertiary"` Buttons/Links with `slot="before"` icons inside `Drawer`. Do not invent custom layout wrappers for drawers or sidebars.
 - Avoid `Message` for inline helper text, form help, mid-content notes, or routine status copy. Use `FormMessage` inside forms, or `Body` with `variant: "info"` and an `_Icon` with `slot: "before"` for lightweight informational copy. Reserve `Message` for persistent page-level notices with a short heading and slotted body copy.
 
 ## Response
