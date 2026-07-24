@@ -123,7 +123,7 @@ For a native Muibook tag not already shown in a selected composition:
 
 ## Independent Core
 
-Without `muibook-components`, use only this compact core for basic layouts:
+When operating standalone without access to `assets/muibook-knowledge/`, `muibook-components`, or an active MCP server, use this compact core for basic layouts:
 
 - `Container`: `center`, `size`, `style`.
 - `Card` with a direct `CardBody` child; `CardBody`: `size`, `style`.
@@ -135,36 +135,20 @@ Without `muibook-components`, use only this compact core for basic layouts:
   `name`, `value`, `size`.
 - `Badge`: `text`, `variant`, `size`; `_Icon`: `icon`, `size`, `color`, `slot`.
 
-This core is an intentionally small snapshot of the working Muibook MCP tree rules, not a separate
-component schema.
+This core is an intentionally small snapshot of working tree rules, not a separate component schema.
 
-If a request needs components or props outside this core, recommend installing
-`muibook-components`. The Muibook Knowledge MCP and full Redactd Canvas plugin remain optional
-richer paths.
+If a request needs components or props outside this core and local plugin assets (`assets/muibook-knowledge/`) are not available, recommend installing `muibook-components`.
 
 ## Knowledge Routing
 
 Choose the available Muibook knowledge source before building the tree:
 
-The standalone pair is the default lightweight route. If the working Muibook Knowledge MCP is
-available, treat its current rules and component lookups as authoritative over either standalone
-skill's embedded snapshot.
+1. **Bundled Plugin Knowledge Assets (Primary in Redactd Canvas Plugin):** When running in or alongside the Redactd Canvas plugin, inspect the local asset files in `assets/muibook-knowledge/` (such as `assets/muibook-knowledge/skills/muibook-components/SKILL.md`, `custom-elements.json`, `compositions.ts`, `json-rules.ts`, and `DESIGN.md`). Use these files directly for comprehensive component, attribute, slot, token, and composition knowledge.
+2. **Lightweight Skill Pair:** When using this skill standalone outside the plugin repository, prefer the installed `muibook-components` skill for component, public attribute, slot, token, and composition references.
+3. **Muibook MCP & Redactd API Tools:** If the working Muibook Knowledge MCP is available, call its `start_here` tool and use its rules, compositions, component lookup, and dynamic attrs as needed. In the full plugin, if `get_redactd_component_knowledge` is available, call it with `format: "summary"`. Treat a newer MCP or API version as authoritative over static local files.
+4. **Independent Core (Last-resort fallback):** If operating standalone without access to `assets/muibook-knowledge/`, `muibook-components`, or active MCP/API tools, use this skill's Independent Core above for basic layouts.
 
-1. **Lightweight skill pair:** Prefer the installed `muibook-components` skill for the standalone
-   Codex workflow. Use its component, public attribute, slot, token, and selected composition
-   references when building the tree.
-2. **Independent core:** If `muibook-components` is unavailable, use only this skill's Independent
-   Core for basic layouts.
-3. **Muibook MCP:** If richer or newer guidance is needed and the Muibook Knowledge MCP is
-   available, call its `start_here` tool, then use its rules, compositions, component lookup, and
-   dynamic attrs as needed. Treat a newer MCP version as authoritative.
-4. **Bundled Redactd knowledge:** In the full Redactd Canvas plugin, if
-   `get_redactd_component_knowledge` is available, call it with `format: "summary"`. This source
-   matches the Muibook version supported by that Redactd release.
-
-This skill alone supports the Independent Core. The two standalone skills plus Codex Browser are
-the recommended lightweight workflow. The Muibook Knowledge MCP, Redactd Canvas plugin, and API
-backend are optional.
+The bundled plugin assets or standalone skill pair plus Codex Browser provide the primary offline workflows. The Muibook Knowledge MCP, Redactd Canvas plugin API backend, and dynamic tools remain optional richer paths.
 
 ## Wireframe Interpretation
 
