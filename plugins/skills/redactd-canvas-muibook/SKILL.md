@@ -11,6 +11,14 @@ This skill can independently create basic layouts with the core components docum
 it with `muibook-components` for the recommended lightweight workflow and broader component,
 attribute, slot, token, and composition knowledge.
 
+## Mandatory First-Pass App Shell Rule
+
+Whenever a wireframe or prompt contains a sidebar navigation menu or side panel, **THE ROOT NODE OF THE JSON TREE MUST BE `Drawer`** (`props: { "open": true, "side": "left", "variant": "persistent", "width": "260px" }`).
+
+- **NEVER** use `Container`, `Card`, `HStack`, or `VStack` as the root node when a sidebar exists.
+- The sidebar navigation items belong in `Drawer`'s primary slot (unslotted `VStack` of `Button`/`Link` items with `variant="tertiary"`, **`align="start"`**, and `slot="before"` `_Icon` items). All navigation buttons inside `Drawer` **MUST explicitly set `align: "start"`**.
+- The main page content **MUST** be wrapped in a direct child `Div` with `props: { "slot": "page" }`.
+
 ## Redactd Tree Contract
 
 Build one root JSON object. Every node must contain all four fields:
@@ -251,52 +259,49 @@ Codex host.
 
 ## Shared Workflow
 
-1. Select the knowledge source using Knowledge Routing above.
-2. Build and validate a Redactd component tree against the Redactd Tree Contract.
-3. Follow the Codex Browser workflow by default, or the API workflow only when browser transport
-   is unavailable.
+1. **STEP 0 - MANDATORY PRE-CHECK FOR API KEY**:  
+   Before building any component tree, before generating any JSON, before writing any scratch files, and before generating any response output:  
+   Check if `REDACTD_API_KEY` is present in `process.env` or if an API key was provided in the prompt/conversation context.  
+   **If NO API KEY IS PRESENT, STOP IMMEDIATELY.** Do NOT generate any JSON tree. Do NOT write any scratch files. Ask the user for their Redactd API Key as your entire initial response and wait for their reply.
+2. Select the knowledge source using Knowledge Routing above.
+3. Build and validate a Redactd component tree against the Redactd Tree Contract.
+4. **Primary Automated Transport**: Call `create_redactd_recipe` via the API tool with the `apiKey` to send the UI tree directly to Redactd and return the one-time `canvas_url`. Do NOT instruct the user to manually copy/paste JSON files.
 
-## Codex Browser Workflow
+## Browser Workflow
 
 1. Use the Browser skill and claim the already-open `redactd.xyz` tab. Do not open a duplicate tab.
 2. Serialize the tree with `JSON.stringify(tree)` and write it to the browser tab clipboard.
 3. Click the wider canvas background so the selected item is `Canvas`, not an individual component.
 4. Open the canvas instance ellipsis menu and choose **Paste JSON**.
 5. Verify the canvas shows the pasted structure and the `✓ Pasted` confirmation.
-6. If the deployed canvas reports a component is not in its registry, treat that as version drift.
-   This is a useful capability gap identified by the experiment, not a failed composition. Preserve
-   the pasted structure, report the missing component, and do not delete or rebuild the work.
-   Recompose that part from registered primitives only when the user explicitly wants compatibility
-   with the currently deployed version.
 
 Never use **Cut**, **Delete**, or **Copy for AI** as a substitute for **Paste JSON**. Preserve the
 user's existing canvas content unless they explicitly asked to replace it.
 
 ## API Workflow
 
-1. Call `get_redactd_context` and confirm `library` is `muibook`.
-2. If the active library is `html-foundations`, use `redactd-canvas-html` instead. If it is
-   unsupported, report that custom libraries are unavailable through this plugin.
-3. Wrap the validated root tree as
-   `{ "tree": ..., "open_canvas": true, "library": "muibook" }` only for this API call.
-4. Call `create_redactd_recipe` with that wrapper.
-5. Tell the user the exact `canvas_url` returned by the tool. Do not rewrite it.
+1. **Check API Auth First (Step 0)**: Check if `REDACTD_API_KEY` is present or if an API key was provided in the conversation. **If no API key is available, STOP IMMEDIATELY AT THE START**. Ask for the Redactd API key as your prompt response and wait for the user to reply.
+2. Confirm `library` is `muibook`.
+3. Wrap the validated root tree as `{ "tree": ..., "open_canvas": true, "library": "muibook" }`.
+4. Call `create_redactd_recipe` with that wrapper and `apiKey`.
+5. Report the exact `canvas_url` returned by the tool.
 
 ## API Auth
 
-- Ask for an API key only after selecting the API workflow.
-- If no API key is already available, ask the user for their Redactd API key and pass it as `apiKey`.
-- Tell the user they can find it in Redactd at Profile > Settings or Team Settings > Account Settings > API Key.
-- For automated or local development use, `REDACTD_API_KEY` in the plugin environment is also supported.
-- Do not include `workspace_id`; Redactd resolves the active workspace from the API key.
+- **STOP AND ASK AT THE START**: If no API key is set in `REDACTD_API_KEY` or passed in the conversation, **STOP AND ASK THE USER FOR THEIR REDACTD API KEY IMMEDIATELY AS YOUR VERY FIRST STEP** before building any JSON or running any scripts.
+- Tell the user they can find it in Redactd at **Profile > Settings** or **Team Settings > Account Settings > API Key**.
+- For automated or local development use, setting `REDACTD_API_KEY` in the shell environment (`export REDACTD_API_KEY="rdx_..."`) is supported to bypass all prompts.
 
 ## Tree Rules
 
 - Use only component types and props from the selected Muibook knowledge source.
 - Never invent Redactd component names, aliases, props, CSS tokens, or Material UI names.
+- **Rule 27 (Mandatory CSS Units)**: All length props (`height`, `width`, `min-height`, `gap`, `padding`, `space`) MUST include valid CSS units (e.g. `"240px"`, `"320px"`, `"100%"`). NEVER output bare numeric strings like `"240"` or `"320"`.
+- **Rule 28 (Slat & SlatGroup Rows)**: Prefer `SlatGroup` (`props.usage: "card"`) and `Slat` (`props.variant: "row"`, `props.col: "1fr auto"`) over ad hoc `HStack` for row-like wireframe items with primary content on the left (`slot="start"`) and secondary metadata, timestamp, badge, or action on the right (`slot="end"`).
+- **Drawer Shell Layout**: When a wireframe or prompt requests a sidebar navigation app shell, use `Drawer` as the root shell (`variant: "persistent"` or `"push"`, `open: true`, `side: "left"`), and wrap all main page content in a `Div` with `props.slot: "page"`.
 - In the API workflow, do not send the tree directly as the request body. The tool sends
   `{ "tree": ..., "open_canvas": true }`.
-- Root additions should usually use `Container` with `center: true` and `size: "medium"` unless the user asks for a fragment.
+- Root additions should usually use `Container` with `center: true` and `size: "medium"` unless the user asks for a fragment or a `Drawer` app shell.
 - Card content must be inside a direct child `CardBody`.
 - Button and Link text belongs on the component props, not inside a child `Body`.
 - Use documented spacing tokens such as `var(--space-300)` rather than raw token numbers.
@@ -310,7 +315,7 @@ user's existing canvas content unless they explicitly asked to replace it.
   app-shell decisions that genuinely depend on browser width.
 - **No Hardcoded White/Light Surface Colors:** NEVER output `var(--white)`, `style: "background: white"`, `#ffffff`, or `color: black` based on visual wireframe image backgrounds. All component surface and text styling must be driven by Redactd component variants (`variant: "primary"`, `variant: "secondary"`, `variant: "tertiary"`, etc.) and semantic design tokens so layouts adapt seamlessly to both light and dark mode.
 - **Slat vs. HStack Rule:** Use `Slat` and `SlatGroup` for horizontal list items, settings rows, metadata feeds, transaction lists, and activity rows. Do not substitute `HStack` when a `Slat` item contract fits. Always set `variant="row"` (or `"header"` / `"action"`) explicitly on `Slat`.
-- **Drawer Component Enforce Rule:** For sidebar menus, app drawers, side filters, or slide-out panels, use the native `Drawer` component (`open: true`, `side: "left"` or `"right"`). Use `variant="tertiary"` Buttons/Links with `slot="before"` icons inside `Drawer`. Do not invent custom layout wrappers for drawers or sidebars.
+- **Drawer Component Enforce Rule:** For sidebar menus, app drawers, side filters, or slide-out panels, use the native `Drawer` component (`open: true`, `side: "left"` or `"right"`). All navigation `Button` and `Link` items inside `Drawer` **MUST explicitly set `align: "start"`** and `variant: "tertiary"` with `slot="before"` icons so labels and icons align to the start of the sidebar. Do not invent custom layout wrappers for drawers or sidebars.
 - Avoid `Message` for inline helper text, form help, mid-content notes, or routine status copy. Use `FormMessage` inside forms, or `Body` with `variant: "info"` and an `_Icon` with `slot: "before"` for lightweight informational copy. Reserve `Message` for persistent page-level notices with a short heading and slotted body copy.
 
 ## Response

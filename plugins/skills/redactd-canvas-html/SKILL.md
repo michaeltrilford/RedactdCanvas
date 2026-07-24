@@ -78,12 +78,12 @@ Produce a reasonable first pass without blocking on minor ambiguity.
 
 ## Transport routing
 
-1. Prefer Codex Browser when an active Redactd canvas is already open.
-2. Otherwise use `create_redactd_recipe` when available.
-3. If neither is available, ask the user to open Redactd in Codex Browser or install the full
-   Redactd Canvas plugin.
-
-Do not ask for an API key when browser transport is available.
+1. **STEP 0 - MANDATORY PRE-CHECK FOR API KEY**:  
+   Before building any component tree, before generating any JSON, before writing any scratch files, and before generating any response output:  
+   Check if `REDACTD_API_KEY` is present in `process.env` or if an API key was provided in the prompt/conversation context.  
+   **If NO API KEY IS PRESENT, STOP IMMEDIATELY.** Do NOT generate any JSON tree. Do NOT write any scratch files. Ask the user for their Redactd API Key as your entire initial response and wait for their reply.
+2. Always call `create_redactd_recipe` via the API tool as the primary automated transport to send the UI tree directly to Redactd and return the `canvas_url`.
+3. Use browser paste only when explicitly requested by the user or when browser automation is actively attached. Do NOT instruct the user to manually copy/paste JSON files.
 
 ## Browser workflow
 
@@ -98,15 +98,11 @@ Never use **Cut**, **Delete**, or **Copy for AI** as a substitute for **Paste JS
 
 ## API workflow
 
-1. Call `get_redactd_context` and confirm `library` is `html-foundations`.
-2. If the active library is `muibook`, use `redactd-canvas-muibook` instead. If it is unsupported,
-   report that custom libraries are unavailable through this plugin.
-3. Wrap the validated root as
-   `{ "tree": tree, "open_canvas": true, "library": "html-foundations" }` only for the API call.
-4. Call `create_redactd_recipe` with that wrapper.
+1. **Check API Auth First (Step 0)**: Check if `REDACTD_API_KEY` is set or provided in prompt context. If missing, **STOP IMMEDIATELY AT THE START AND ASK THE USER FOR THEIR REDACTD API KEY FIRST**.
+2. Confirm `library` is `html-foundations`.
+3. Wrap the validated root as `{ "tree": tree, "open_canvas": true, "library": "html-foundations" }`.
+4. Call `create_redactd_recipe` with that wrapper and `apiKey`.
 5. Report the exact returned `canvas_url`; do not rewrite it.
-
-Ask for a Redactd API key only after selecting API transport. Do not include `workspace_id`.
 
 ## Response
 
