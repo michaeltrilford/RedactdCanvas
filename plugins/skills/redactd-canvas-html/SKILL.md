@@ -1,6 +1,6 @@
 ---
 name: redactd-canvas-html
-description: Create or modify semantic HTML Foundations UI on an active Redactd canvas using Redactd's native HTML element registry and html-* class system. Use when Codex needs to build plain HTML/CSS pages, sections, articles, navigation, lists, media, or forms in Redactd instead of using Muibook Web Components.
+description: Create or modify semantic HTML Foundations UI on an active Redactd canvas using Redactd's native HTML element registry and html-* class system. Use when building plain HTML/CSS pages, sections, articles, navigation, lists, media, or forms in Redactd instead of using Muibook Web Components.
 ---
 
 # Redactd Canvas: HTML
