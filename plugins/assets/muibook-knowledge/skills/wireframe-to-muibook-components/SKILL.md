@@ -12,7 +12,7 @@ Use this skill when provided with a wireframe, sketch, design screenshot, or vis
 When a wireframe image or screenshot is provided:
 
 1. **Hierarchy over Pixels:** Read the wireframe as a description of intent, user hierarchy, and approximate layout rather than a pixel-perfect specification.
-2. **Keyword & Concept Resolution:** Use visible labels, control patterns, and visual landmarks to identify likely UI concepts, then resolve them through the Muibook keyword mappings (`keywords.ts` or `find_component` MCP tool).
+2. **Keyword & Concept Resolution:** Use visible labels, control patterns, and visual landmarks to identify likely UI concepts, then resolve them through `find_component` when the Muibook Knowledge MCP is available, or against the bundled component list / CEM.
 3. **API & Prop Verification:** Verify inferred components, public attributes, and slots against the Muibook component API (CEM / `lookup_component` MCP tool) before writing markup.
 4. **Layout Regions vs. Cards:** Treat unlabelled rectangles and bounding outlines as layout containers (`mui-v-stack`, `mui-h-stack`, `mui-grid`, `mui-container`) by default. Do not automatically convert every outlined region into an `mui-card`.
 5. **Spatial Layout Inference:** Infer `mui-h-stack`, `mui-v-stack`, `mui-grid`, spacing (`var(--space-*)`), alignment, wrapping, and responsive directions from the spatial relationships between elements.

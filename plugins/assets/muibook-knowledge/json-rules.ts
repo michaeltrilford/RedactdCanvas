@@ -239,7 +239,7 @@ place JSON inside an HTML attribute, or generate JavaScript assignment code.
 For every generated dataset:
 
 - Keep all measurements as finite JSON numbers, not formatted strings. Use \`4.2\`, \`101.28\`, or
-  \`18400000\`, not \`"4.2%"\`, \`"\$101.28"\`, or \`"18.4M"\`. Formatting belongs in component props and
+  \`18400000\`, not \`"4.2%"\`, \`"101.28 USD"\`, or \`"18.4M"\`. Formatting belongs in component props and
   composed labels.
 - Use one unique \`time\` value per datum within a dataset or comparison series. Sort points from
   oldest to newest even though the components defensively sort copied input arrays.
@@ -1558,18 +1558,43 @@ Use this pattern to showcase multi-item progress tracking with strict, pixel-per
 \`\`\`
 
 
-## Spacing Values
+## Tokens
 
-000, 025, 050, 100, 200, 300, 400, 500, 600, 700, 800
-Use 100-300 for tight/form spacing and 400-800 for layout.
+Use only these CSS variables. Always wrap as \`var(--name)\`.
+- Spacing: \`--space-000\`, \`025\`, \`050\`, \`100\`, \`200\`, \`300\`, \`400\`, \`500\`, \`600\`, \`700\`, \`800\`. Use 100-300 for tight/form, 400-800 for layout.
+- Radius: \`--radius-100\`, \`150\`, \`200\`, \`300\`
+- Surface: \`--surface\`, \`--surface-elevated-100\`, \`--surface-elevated-200\`, \`--surface-elevated-300\`, \`--surface-recessed-100\`, \`--surface-recessed-200\`, \`--surface-recessed-300\`
+- Text: \`--text-color\`, \`--heading-text-color\`, \`--text-color-secondary\`, \`--text-color-info\`, \`--text-color-positive\`, \`--text-color-warning\`, \`--text-color-attention\`
+- Border: \`--border-color\`
+- Foundations if needed: \`--grey-50\` to \`--grey-1400\`; \`--red\`|\`--orange\`|\`--green\`|\`--blue-100\` to \`1000\`
+Do not invent \`--color-*\` aliases. Do not use raw \`#hex\` or color names.
 
 ## Assets
 
-Use real Muibook asset paths:
-- Base path: 'https://muibook.com/images/'
-- Logos: 'logo.png', 'guides.svg', 'mui.svg'
-- Backgrounds: 'placeholder.png', 'snowy-mint.png', 'buttercup.png', 'sapphire.png', 'crystal.png', 'premier.png', 'diamond.png'
-- Partners: 'mastercard.svg', 'visa-black.svg', 'visa-white.svg', 'amex.svg', 'emerald.svg', 'ruby.svg', 'sapphire.svg'
+Image \`src\`, SmartCard \`logo\`, \`partner\`, and \`bg-image\` must be absolute \`https://muibook.com/images/...\` URLs. Never emit a bare filename.
+
+Logos:
+- https://muibook.com/images/logo.png
+- https://muibook.com/images/guides.svg
+- https://muibook.com/images/mui.svg
+
+Backgrounds:
+- https://muibook.com/images/placeholder.png
+- https://muibook.com/images/snowy-mint.png
+- https://muibook.com/images/buttercup.png
+- https://muibook.com/images/sapphire.png
+- https://muibook.com/images/crystal.png
+- https://muibook.com/images/premier.png
+- https://muibook.com/images/diamond.png
+
+Partners:
+- https://muibook.com/images/mastercard.svg
+- https://muibook.com/images/visa-black.svg
+- https://muibook.com/images/visa-white.svg
+- https://muibook.com/images/amex.svg
+- https://muibook.com/images/emerald.svg
+- https://muibook.com/images/ruby.svg
+- https://muibook.com/images/sapphire.svg
 
 ## Formatting
 

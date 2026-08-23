@@ -26,13 +26,12 @@ function extractStringRaw(value) {
 async function readKnowledge() {
   if (cachedKnowledge) return cachedKnowledge;
 
-  const [customElements, dynamicAttrs, rulesSource, compositionsSource, keywordsSource, designSystem] =
+  const [customElements, dynamicAttrs, rulesSource, compositionsSource, designSystem] =
     await Promise.all([
       readJson(join(KNOWLEDGE_DIR, 'custom-elements.json')),
       readJson(join(KNOWLEDGE_DIR, 'dynamic-attrs.json')),
       readText(join(KNOWLEDGE_DIR, 'json-rules.ts')),
       readText(join(KNOWLEDGE_DIR, 'compositions.ts')),
-      readText(join(KNOWLEDGE_DIR, 'keywords.ts')),
       readText(join(KNOWLEDGE_DIR, 'DESIGN.md'))
     ]);
 
@@ -43,7 +42,6 @@ async function readKnowledge() {
     rules: extractStringRaw(rulesSource),
     sources: {
       compositions: compositionsSource,
-      keywords: keywordsSource,
       designSystem
     }
   };
